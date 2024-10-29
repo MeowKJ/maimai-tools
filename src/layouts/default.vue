@@ -1,10 +1,10 @@
 <template>
   <v-navigation-drawer v-model="drawer">
     <v-list-item>
-      <v-list-item-avatar>
-        <v-img style="margin:30px;" src="/src/assets/hammer.svg" />
-      </v-list-item-avatar>
-      <v-list-item-title>小工具</v-list-item-title>
+      <v-list-item-media class="mt-5 mb-8">
+        <v-img src="/src/assets/hammer.svg" max-height="150" />
+      </v-list-item-media>
+      <v-list-item-title>Maimai的小工具</v-list-item-title>
       <v-list density="compact" item-props :items="items" nav />
     </v-list-item>
   </v-navigation-drawer>
