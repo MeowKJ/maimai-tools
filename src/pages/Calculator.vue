@@ -339,7 +339,7 @@ function increaseScore(noteType: NoteType, scoreType: ScoreType) {
 }
 function decreaseScore(noteType: NoteType, scoreType: ScoreType) {
     if (scoreType === 'prefect1' || scoreType === 'great1' || scoreType === 'great2') {
-        score.value.break[scoreType]++
+        score.value.break[scoreType]--
         return
     }
     if (score.value[noteType][scoreType] === 0) {
