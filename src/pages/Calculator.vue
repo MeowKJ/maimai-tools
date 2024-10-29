@@ -210,7 +210,7 @@
     </v-container>
 </template>
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { fetchSongDetails, Song } from '@/plugins/song'
 
 const maimaiAliasUrl = 'https://api.yuzuchan.moe/maimaidx/maimaidxalias'
