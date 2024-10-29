@@ -5,9 +5,9 @@
         <v-divider></v-divider>
         <v-row>
             <!-- 步骤一 -->
-            <v-col cols="12">
+            <v-col class="mt-8" cols="12">
                 <h2>步骤一：选取你要计算的乐曲</h2>
-                <v-row>
+                <v-row class="mt-1">
                     <v-col cols="8">
                         <v-text-field label="输入别名或 ID" v-model="alias" outlined placeholder="输入别名或 ID" />
                     </v-col>
@@ -17,7 +17,7 @@
                 </v-row>
                 <div v-if="results.length > 0">
                     <h3>找到的歌曲：</h3>
-                    <v-row>
+                    <v-row class="mt-1">
                         <v-col v-for="song in results" :key="song.SongID" cols="12" md="6" lg="6">
                             <v-card @click="selectSong(song)" style="cursor: pointer;">
                                 <v-row no-gutters>
@@ -142,7 +142,18 @@
                 </v-card>
 
                 <v-card class="mx-auto mt-5">
-                    <v-card-title>分数线</v-card-title>
+                    <v-card-title>
+                        <v-row>
+                            <v-col style="font-size: 1.4em;" cols="6">
+                                分数线
+                            </v-col>
+                            <v-col cols="6" class="text-right">
+                                <v-btn @click="fromCopy"> 从剪切板导入
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-card-title>
+
                     <v-card-text>
                         <v-row class="mt-3">
                             <v-col cols="12" md="6" v-for="t in basicTypeString">
@@ -193,6 +204,9 @@
                 </v-card>
             </v-col>
         </v-row>
+        <v-snackbar v-model="snackbar" :timeout="2000">
+            {{ snackbarText }}
+        </v-snackbar>
     </v-container>
 </template>
 <script setup lang="ts">
@@ -209,6 +223,9 @@ const maimaiAlias = ref<any[]>([])
 const hasTwoTypes = ref(false)
 const isSelectedDXType = ref(true)
 const selectedLevelIndex = ref(0)
+
+const snackbar = ref(false)
+const snackbarText = ref('')
 
 const scoreColor = {
     criticalPrefect: 'yellow',
@@ -301,6 +318,8 @@ const breakScoreString = {
         color: 'grey',
     },
 }
+const keyListNote = ['tap', 'hold', 'slide', 'touch', 'break'];
+const keyListScore = ['prefect', 'great', 'good', 'miss'];
 
 type BasicNoteType = 'tap' | 'hold' | 'slide' | 'touch';
 type NoteType = 'tap' | 'hold' | 'slide' | 'touch' | 'break';
@@ -618,6 +637,53 @@ function selectLevelIndex(index: number) {
 function getSongImage(songID: number) {
     return `https://maimai.mpas.top/assets/cover/${songID}`
 }
+const clipboardContent = ref('');
+const dataList = ref<number[]>([]);
+
+const fromCopy = async () => {
+    try {
+        const text = await navigator.clipboard.readText();
+        clipboardContent.value = text;
+        console.log(clipboardContent.value);
+        //转化为数字数组，用/t或/n分割
+        dataList.value = clipboardContent.value.split(/\t|\n/).map(Number);
+        console.log(dataList.value)
+        //如果长度小于25，说明不是正确的数据，截取前25个数据
+        if (dataList.value.length < 25) {
+            snackbarText.value = '请检查剪切板数据是否正确';
+            snackbar.value = true;
+        }
+        dataList.value = dataList.value.slice(0, 25);
+        //验证每5项相加是否等于总数
+
+        for (let i = 0; i < 5; i++) {
+            let sum = dataList.value[i * 5] + dataList.value[i * 5 + 1] + dataList.value[i * 5 + 2] + dataList.value[i * 5 + 3] + dataList.value[i * 5 + 4];
+            if (sum !== notesDetails.value[keyListNote[i] as NoteType]) {
+                snackbarText.value = '请检查剪切板是否为匹配选的乐曲或难度';
+                snackbar.value = true;
+                return;
+            }
+        }
+
+        criticalPrefect.value.tap = dataList.value[0];
+        criticalPrefect.value.hold = dataList.value[5];
+        criticalPrefect.value.slide = dataList.value[10];
+        criticalPrefect.value.touch = dataList.value[15];
+        criticalPrefect.value.break = dataList.value[20];
+
+        for (let i = 0; i < 4; i++) {
+            for (let j = 1; j < 5; j++) {
+                score.value[keyListNote[i] as NoteType][keyListScore[j - 1] as BasicScoreType] = dataList.value[i * 5 + j];
+            }
+        }
+        snackbarText.value = '导入成功';
+        snackbar.value = true;
+
+    } catch (err) {
+        snackbarText.value = '读取剪切板失败';
+        snackbar.value = true;
+    }
+};
 
 function getRateImage(rate: number) {
     const baseUrl1 = 'https://maimai.mpas.top/assets/rank/'
