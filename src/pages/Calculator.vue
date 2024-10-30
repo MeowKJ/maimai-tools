@@ -671,11 +671,16 @@ const fromCopy = async () => {
         criticalPrefect.value.touch = dataList.value[15];
         criticalPrefect.value.break = dataList.value[20];
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 3; i++) {
             for (let j = 1; j < 5; j++) {
                 score.value[keyListNote[i] as NoteType][keyListScore[j - 1] as BasicScoreType] = dataList.value[i * 5 + j];
             }
         }
+        score.value.break.prefect = dataList.value[21];
+        score.value.break.great = dataList.value[22];
+        score.value.break.good = dataList.value[23];
+        score.value.break.miss = dataList.value[24];
+
         snackbarText.value = '导入成功';
         snackbar.value = true;
 
