@@ -705,17 +705,47 @@ const fromCopy = async () => {
     try {
         const text = await navigator.clipboard.readText();
         clipboardContent.value = text;
-        console.log(clipboardContent.value);
         //转化为数字数组，用/t或/n分割
-        dataList.value = clipboardContent.value.split(/\t|\n/).map(Number);
-        console.log(dataList.value)
+        dataList.value = clipboardContent.value.split(/\s+/).map(Number);
         //如果长度小于25，说明不是正确的数据，截取前25个数据
-        if (dataList.value.length < 25) {
+
+        //未开CriticalPerfect，在扩充数据变成25
+        // 检查 dataList 长度为 21 时进行扩充
+
+        // 假设原始 dataList 长度为 21
+        if (dataList.value.length == 21) {
+            // 创建一个新的数组
+            console.log("ssss")
+            const newArray = [];
+
+            // 按照要求插入数据
+            newArray.push(0);  // 插入第一个0
+            newArray.push(...dataList.value.slice(0, 4)); // 插入原数组的前4个数
+            newArray.push(0);  // 插入第二个0
+            newArray.push(...dataList.value.slice(4, 8)); // 插入原数组的下4个数
+            newArray.push(0);  // 插入第三个0
+            newArray.push(...dataList.value.slice(8, 12)); // 插入原数组的下4个数
+            newArray.push(0);  // 插入第四个0
+            newArray.push(...dataList.value.slice(12, 16)); // 插入原数组的下4个数
+            newArray.push(...dataList.value.slice(16, 21)); // 插入剩余的5个数
+
+            // 将新数组赋值给 dataList
+            dataList.value = newArray;
+        }
+
+        console.log(dataList.value.toString())
+
+        if (dataList.value.length !== 25) {
             snackbarText.value = '请检查剪切板数据是否正确';
             snackbar.value = true;
+            return
         }
+
+
         dataList.value = dataList.value.slice(0, 25);
         //验证每5项相加是否等于总数
+
+
 
         for (let i = 0; i < 5; i++) {
             let sum = dataList.value[i * 5] + dataList.value[i * 5 + 1] + dataList.value[i * 5 + 2] + dataList.value[i * 5 + 3] + dataList.value[i * 5 + 4];
