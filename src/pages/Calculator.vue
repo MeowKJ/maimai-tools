@@ -12,14 +12,14 @@
                         <v-text-field label="输入别名或 ID" v-model="alias" outlined placeholder="输入别名或 ID" />
                     </v-col>
                     <v-col cols="4">
-                        <v-btn color="primary" @click="findSong" style="height: 56px;">查找歌曲</v-btn>
+                        <v-btn color="primary" @click="findSong" style="height: 56px">查找歌曲</v-btn>
                     </v-col>
                 </v-row>
                 <div v-if="results.length > 0">
                     <h3>找到的歌曲：</h3>
                     <v-row class="mt-1">
                         <v-col v-for="song in results" :key="song.SongID" cols="12" md="6" lg="6">
-                            <v-card @click="selectSong(song)" style="cursor: pointer;">
+                            <v-card @click="selectSong(song)" style="cursor: pointer">
                                 <v-row no-gutters>
                                     <v-col cols="4">
                                         <v-img :src="getSongImage(song.SongID)" />
@@ -44,14 +44,19 @@
                 <h2>步骤二：选择铺面</h2>
                 <p class="mt-2 mb-2">
                     {{ selectedSong.title }}
-                    [ ID: {{ isSelectedDXType ? selectedSong.SongID + 10000 : selectedSong.SongID }} ]</p>
+                    [ ID:
+                    {{
+                        isSelectedDXType ? selectedSong.SongID + 10000 : selectedSong.SongID
+                    }}
+                    ]
+                </p>
 
                 <!-- 选择铺面 -->
                 <v-row>
                     <v-col cols="12">
-                        <v-btn @click="isSelectedDXType = !isSelectedDXType" color="primary" style="width: 100%;"
+                        <v-btn @click="isSelectedDXType = !isSelectedDXType" color="primary" style="width: 100%"
                             :disabled="!hasTwoTypes">
-                            {{ isSelectedDXType ? 'DX 铺面' : '标准铺面' }}
+                            {{ isSelectedDXType ? "DX 铺面" : "标准铺面" }}
                         </v-btn>
                     </v-col>
                 </v-row>
@@ -61,14 +66,11 @@
                 <v-row class="mt-2">
                     <v-col v-for="(diff, index) in selectedDiffList" :key="index" :cols="index === 4 ? 12 : 6" md="2">
                         <v-btn @click="selectLevelIndex(index)" :color="diffString[index].color"
-                            :disabled="selectedLevelIndex === index" style="width: 100%;">
+                            :disabled="selectedLevelIndex === index" style="width: 100%">
                             {{ diffString[index].name }} {{ diff.level_value }}
-
                         </v-btn>
                     </v-col>
                 </v-row>
-
-
             </v-col>
 
             <v-col v-if="selectedSong">
@@ -79,14 +81,18 @@
                     <v-card class="mx-auto mt-5">
                         <v-card-text>
                             <v-row no-gutters>
-                                <v-col style="text-align: center;" cols="5">
-                                    <span class="text-amber score-text">{{ finalScore.toFixed(4) }}</span>
+                                <v-col style="text-align: center" cols="5">
+                                    <span class="text-amber score-text">{{
+                                        finalScore.toFixed(4)
+                                        }}</span>
                                 </v-col>
                                 <v-col cols="5">
                                     <v-img :src="getRateImage(finalScore)" height="28"></v-img>
                                 </v-col>
                                 <v-col cols="2">
-                                    <v-chip :color="starNumberColor" text-color="white">{{ starNumber }}</v-chip>
+                                    <v-chip :color="starNumberColor" text-color="white">{{
+                                        starNumber
+                                        }}</v-chip>
                                 </v-col>
                             </v-row>
                         </v-card-text>
@@ -95,10 +101,10 @@
                             <!-- 显示当前选择的难度等级 -->
                             <v-chip class="mr-2" v-if="selectedSong" :color="diffString[selectedLevelIndex].color"
                                 variant="flat">
-                                {{ selectedDiffList[selectedLevelIndex]?.level_value || '无' }}
+                                {{ selectedDiffList[selectedLevelIndex]?.level_value || "无" }}
                             </v-chip>
                             <v-chip v-if="selectedSong">
-                                {{ isSelectedDXType ? 'DX' : '标准' }}
+                                {{ isSelectedDXType ? "DX" : "标准" }}
                             </v-chip>
                         </template>
 
@@ -106,11 +112,12 @@
                             <v-avatar size="48">
                                 <v-img :src="getSongImage(selectedSong?.SongID || 0)"></v-img>
                             </v-avatar>
-                            <v-card-title class="pl-2">{{ selectedSong?.title || '选择一首乐曲' }}</v-card-title>
+                            <v-card-title class="pl-2">{{
+                                selectedSong?.title || "选择一首乐曲"
+                                }}</v-card-title>
                         </template>
                     </v-card>
                 </div>
-
 
                 <v-card class="mx-auto mt-5">
                     <v-card-title>音符统计</v-card-title>
@@ -129,12 +136,24 @@
 
                             <tbody>
                                 <tr>
-                                    <td>{{ selectedDiffList[selectedLevelIndex]?.notes.total || 0 }}</td>
-                                    <td>{{ selectedDiffList[selectedLevelIndex]?.notes.tap || 0 }}</td>
-                                    <td>{{ selectedDiffList[selectedLevelIndex]?.notes.hold || 0 }}</td>
-                                    <td>{{ selectedDiffList[selectedLevelIndex]?.notes.slide || 0 }}</td>
-                                    <td>{{ selectedDiffList[selectedLevelIndex]?.notes.touch || 0 }}</td>
-                                    <td>{{ selectedDiffList[selectedLevelIndex]?.notes.break || 0 }}</td>
+                                    <td>
+                                        {{ selectedDiffList[selectedLevelIndex]?.notes.total || 0 }}
+                                    </td>
+                                    <td>
+                                        {{ selectedDiffList[selectedLevelIndex]?.notes.tap || 0 }}
+                                    </td>
+                                    <td>
+                                        {{ selectedDiffList[selectedLevelIndex]?.notes.hold || 0 }}
+                                    </td>
+                                    <td>
+                                        {{ selectedDiffList[selectedLevelIndex]?.notes.slide || 0 }}
+                                    </td>
+                                    <td>
+                                        {{ selectedDiffList[selectedLevelIndex]?.notes.touch || 0 }}
+                                    </td>
+                                    <td>
+                                        {{ selectedDiffList[selectedLevelIndex]?.notes.break || 0 }}
+                                    </td>
                                 </tr>
                             </tbody>
                         </v-table>
@@ -144,12 +163,9 @@
                 <v-card class="mx-auto mt-5">
                     <v-card-title>
                         <v-row>
-                            <v-col style="font-size: 1.4em;" cols="6">
-                                分数线
-                            </v-col>
+                            <v-col style="font-size: 1.4em" cols="6"> 分数线 </v-col>
                             <v-col cols="6" class="text-right">
-                                <v-btn @click="fromCopy"> 从剪切板导入
-                                </v-btn>
+                                <v-btn @click="fromCopy"> 从剪切板导入 </v-btn>
                             </v-col>
                         </v-row>
                     </v-card-title>
@@ -158,14 +174,16 @@
                         <v-row class="mt-3">
                             <v-col cols="12" md="6" v-for="t in basicTypeString">
                                 <v-divider></v-divider>
-                                <h3 class="mt-3 mb-3">{{ t.name }} - {{ notesDetails[t.type] }}</h3>
+                                <h3 class="mt-3 mb-3">
+                                    {{ t.name }} - {{ notesDetails[t.type] }}
+                                </h3>
                                 <v-slider v-model="criticalPrefect[t.type]" label="CPrefect" step="1"
                                     :max="notesDetails[t.type]" :color="scoreColor.criticalPrefect" thumb-label="always"
                                     readonly>
                                 </v-slider>
                                 <!--禁用v-slider的动画效果-->
                                 <v-slider v-for="s in scoreString" v-model="score[t.type][s.type]" :color="s.color"
-                                    :thumb-color="s.color" :track-color="scoreColor.criticalPrefect" :label=s.name
+                                    :thumb-color="s.color" :track-color="scoreColor.criticalPrefect" :label="s.name"
                                     step="1" :max="caculateMax(t.type, score[t.type][s.type])" thumb-label="always">
                                     <template v-slot:prepend>
                                         <v-btn @click="decreaseScore(t.type, s.type)" icon="mdi-minus"
@@ -186,7 +204,7 @@
                                     readonly>
                                 </v-slider>
                                 <v-slider v-for="s in breakScoreString" v-model="score.break[s.type]" :color="s.color"
-                                    :thumb-color="s.color" :track-color="scoreColor.criticalPrefect" :label=s.name
+                                    :thumb-color="s.color" :track-color="scoreColor.criticalPrefect" :label="s.name"
                                     step="1" :max="caculateMax('break', score.break[s.type])" thumb-label="always">
                                     <template v-slot:prepend>
                                         <v-btn @click="decreaseScore('break', s.type)" icon="mdi-minus"
@@ -474,33 +492,76 @@ fetchAliases()
 
 // 查找歌曲
 async function findSong() {
-    errorMessage.value = null
-    results.value = []
+    //清空选择的结果
 
+    errorMessage.value = null
+
+    //获取字符
     const trimmedAlias = alias.value.trim()
     if (!trimmedAlias) {
         errorMessage.value = '请输入别名或 ID。'
         return
     }
 
+    //获取输入相信信息
     const id = Number(trimmedAlias)
     const isNumericInput = !isNaN(id)
 
-    // 过滤歌曲，若为数字，则查找匹配的ID；否则，按别名查找
-    results.value = filterUniqueSongs(
-        maimaiAlias.value.filter(
-            song => song.SongID === (isNumericInput ? id : -1) || song.Alias.includes(trimmedAlias)
-        )
-    )
+    let searchedIDList: number[] = [];
 
-    if (results.value.length === 0) {
+    maimaiAlias.value.forEach(song => {
+        // 先检查别名匹配
+        const isAliasMatch = song.Alias.includes(trimmedAlias);
+
+        // 如果是数字输入且 SongID 匹配，或者别名匹配，才添加到 searchedIDList
+        if ((isNumericInput && song.SongID === id) || isAliasMatch) {
+            const songID = song.SongID;
+
+            // 仅在 ID 不重复时才推送
+            if (!searchedIDList.includes(songID)) {
+                // 如果 songID 大于 10000，检查是否存在小于 10000 的相同 ID
+                if (songID > 10000) {
+                    const smallerID = songID % 10000;
+                    // 如果 smallerID 还未出现过，添加它
+                    if (!searchedIDList.includes(smallerID)) {
+                        searchedIDList.push(smallerID);
+                    }
+                } else {
+                    // 如果 songID 小于等于 10000，直接添加
+                    searchedIDList.push(songID);
+                }
+            }
+        }
+    });
+
+
+
+    if (searchedIDList.length === 0) {
         errorMessage.value = '未找到对应的歌曲。'
         return
     }
 
-    // 获取歌曲详细信息
-    results.value = await Promise.all(results.value.map(song => fetchSongDetails(song.SongID)))
+    results.value = []
+    selectedSong.value = null
+
+
+
+    // 获取歌曲详细信息并更新 results.value
+    try {
+        const songs = await Promise.all(
+            searchedIDList.map(async (songID) => {
+                // 获取单个歌曲的详细信息
+                return await fetchSongDetails(songID)
+            })
+        )
+        // 更新 results.value
+        results.value = songs
+    } catch (error) {
+        console.error("Error fetching song details:", error)
+        errorMessage.value = '获取歌曲详细信息失败。'
+    }
 }
+
 
 // 选择歌曲
 function selectSong(song: Song) {
@@ -732,16 +793,7 @@ function getRateImage(rate: number) {
     return baseUrl1 + 'd'
 }
 
-// 去除重复的歌曲ID
-function filterUniqueSongs(songs: any[]) {
-    const uniqueSongs = songs.map(song => {
-        if (song.SongID > 10000) song.SongID %= 10000
-        return song
-    })
-    return uniqueSongs.filter(
-        (song, index, self) => index === self.findIndex(t => t.SongID === song.SongID)
-    )
-}
+
 
 //禁用双击缩放
 const disableDoubleTapZoom = (event: MouseEvent) => {
@@ -787,9 +839,7 @@ onBeforeUnmount(() => {
     document.removeEventListener('dblclick', disableDoubleTapZoom);
     window.removeEventListener('scroll', handleScroll);
 });
-
 </script>
-
 
 <style>
 .score-text {
