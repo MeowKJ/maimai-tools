@@ -230,6 +230,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { fetchSongDetails, Song } from '@/plugins/song'
+import Fuse from 'fuse.js';
 
 const maimaiAliasUrl = 'https://api.yuzuchan.moe/maimaidx/maimaidxalias'
 const alias = ref('')
@@ -490,76 +491,89 @@ async function fetchAliases() {
 }
 fetchAliases()
 
-// 查找歌曲
 async function findSong() {
-    //清空选择的结果
-
-    errorMessage.value = null
-
-    //获取字符
-    const trimmedAlias = alias.value.trim()
-    if (!trimmedAlias) {
-        errorMessage.value = '请输入别名或 ID。'
-        return
-    }
-
-    //获取输入相信信息
-    const id = Number(trimmedAlias)
-    const isNumericInput = !isNaN(id)
-
-    let searchedIDList: number[] = [];
-
-    maimaiAlias.value.forEach(song => {
-        // 先检查别名匹配
-        const isAliasMatch = song.Alias.includes(trimmedAlias);
-
-        // 如果是数字输入且 SongID 匹配，或者别名匹配，才添加到 searchedIDList
-        if ((isNumericInput && song.SongID === id) || isAliasMatch) {
-            const songID = song.SongID;
-
-            // 仅在 ID 不重复时才推送
-            if (!searchedIDList.includes(songID)) {
-                // 如果 songID 大于 10000，检查是否存在小于 10000 的相同 ID
-                if (songID > 10000) {
-                    const smallerID = songID % 10000;
-                    // 如果 smallerID 还未出现过，添加它
-                    if (!searchedIDList.includes(smallerID)) {
-                        searchedIDList.push(smallerID);
-                    }
-                } else {
-                    // 如果 songID 小于等于 10000，直接添加
-                    searchedIDList.push(songID);
-                }
-            }
-        }
-    });
-
-
-
-    if (searchedIDList.length === 0) {
-        errorMessage.value = '未找到对应的歌曲。'
-        return
-    }
-
+    // 清空选择的结果
     results.value = []
     selectedSong.value = null
+    errorMessage.value = null;
 
-
-
-    // 获取歌曲详细信息并更新 results.value
-    try {
-        const songs = await Promise.all(
-            searchedIDList.map(async (songID) => {
-                // 获取单个歌曲的详细信息
-                return await fetchSongDetails(songID)
-            })
-        )
-        // 更新 results.value
-        results.value = songs
-    } catch (error) {
-        console.error("Error fetching song details:", error)
-        errorMessage.value = '获取歌曲详细信息失败。'
+    // 获取并处理输入的别名或 ID
+    const trimmedAlias = alias.value.trim();
+    if (!trimmedAlias) {
+        errorMessage.value = '请输入别名或 ID。';
+        return;
     }
+
+    // 判断输入是否为数字
+    const id = Number(trimmedAlias);
+    const isNumericInput = !isNaN(id);
+
+    // 用来存储匹配的歌曲 ID 列表
+    const searchedIDList: number[] = [];
+
+    // 创建模糊搜索实例，便于后续使用
+    const fuseOptions = {
+        shouldSort: true, // 是否对结果进行排序
+        includeScore: true,  // 包含每个匹配项的得分
+        threshold: 0.3,  // 设置模糊搜索阈值，范围 0 到 1，越低越精确
+        keys: ['Alias'],  // 指定需要搜索的字段，包含别名和歌曲 ID
+    };
+
+
+    // 遍历歌曲列表，检查匹配情况
+    for (const song of maimaiAlias.value) {
+        // 如果输入是数字且与 songID 匹配，直接添加
+        if (isNumericInput && song.SongID === id) {
+            addSongIDToList(song.SongID, searchedIDList);
+            continue;
+        }
+
+        // 如果是别名匹配，使用 Fuse.js 进行模糊搜索
+        const fuse = new Fuse(song.Alias, fuseOptions);
+        const results = fuse.search(trimmedAlias);
+
+        if (results.length > 0) {
+            addSongIDToList(song.SongID, searchedIDList);
+        }
+    }
+
+    // 如果没有找到匹配的歌曲，返回错误
+    if (searchedIDList.length === 0) {
+        errorMessage.value = '未找到对应的歌曲。';
+        return;
+    }
+
+    // 获取歌曲详细信息并更新 results
+    try {
+        const songs = await fetchSongDetailsForIDs(searchedIDList);
+        results.value = songs;
+        selectedSong.value = null;  // 重置选中的歌曲
+    } catch (error) {
+        console.error("Error fetching song details:", error);
+        errorMessage.value = '获取歌曲详细信息失败。';
+    }
+}
+
+// 辅助函数：向搜索结果列表添加 SongID
+function addSongIDToList(songID: number, searchedIDList: number[]) {
+    if (!searchedIDList.includes(songID)) {
+        if (songID > 10000) {
+            const smallerID = songID % 10000;
+            if (!searchedIDList.includes(smallerID)) {
+                searchedIDList.push(smallerID);
+            }
+        } else {
+            searchedIDList.push(songID);
+        }
+    }
+}
+
+// 批量获取歌曲详细信息
+async function fetchSongDetailsForIDs(songIDs: number[]) {
+    const songs = await Promise.all(
+        songIDs.map(async (songID) => fetchSongDetails(songID))
+    );
+    return songs;
 }
 
 
