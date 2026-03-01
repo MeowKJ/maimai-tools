@@ -1,3 +1,12 @@
+> [!IMPORTANT]
+> 本仓库已归档，不再继续更新。
+>  
+> 新项目已迁移至：[`MeowKJ/maimai-lab`](https://github.com/MeowKJ/maimai-lab.git)
+>  
+> `maimai-lab` 将 maimai 频道机器人、maimai 小工具、maimai 网页查分器、maimai 图片缓存整合为一个仓库，便于统一维护与 CI/CD。
+>  
+
+
 # Vuetify (Default)
 
 This is the official scaffolding tool for Vuetify, designed to give you a head start in building your new Vuetify application. It sets up a base template with all the necessary configurations and standard directory structure, enabling you to begin development without the hassle of setting up the project from scratch.
